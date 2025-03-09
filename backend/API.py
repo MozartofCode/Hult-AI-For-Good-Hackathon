@@ -13,13 +13,13 @@ def api_get_analysis():
     return jsonify(result)
  
 @app.route('/get_habits', methods=['GET'])
-def api_get_analysis():
+def api_get_habits():
     result = get_habits()
     return jsonify(result)
 
 @app.route('/compare_weeks', methods=['GET'])
 def api_get_weeks():
-    result = compare_last_week
+    result = compare_last_week()
     return jsonify(result)
 
 if __name__ == '__main__':

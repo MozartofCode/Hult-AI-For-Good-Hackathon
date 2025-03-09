@@ -4,7 +4,9 @@ const express = require('express');
 const app = express();
 const port = 5000;
 const axios = require('axios');
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json());
 
 // Start the server
@@ -17,7 +19,7 @@ app.listen(port, () => {
 app.get('/getAnalysis', async (req, res) => {
 
     try {
-        const response = await axios.get('https://localhost:3000/get_analysis');
+        const response = await axios.get('http://localhost:3000/get_analysis');
         const analysis = response.data;
         res.status(200).json({ message: analysis });
     }
@@ -33,7 +35,7 @@ app.get('/getAnalysis', async (req, res) => {
 app.get('/getHabits', async (req, res) => {
 
     try {
-        const response = await axios.get('https://localhost:3000/get_habits');
+        const response = await axios.get('http://localhost:3000/get_habits');
         const habits = response.data;
         res.status(200).json({ message: habits });
     }
@@ -48,7 +50,7 @@ app.get('/getHabits', async (req, res) => {
 app.get('/compareLastWeek', async (req, res) => {
 
     try {
-        const response = await axios.get('https://localhost:3000/compare_weeks');
+        const response = await axios.get('http://localhost:3000/compare_weeks');
         const comparison = response.data;
         res.status(200).json({ message: comparison});
     }

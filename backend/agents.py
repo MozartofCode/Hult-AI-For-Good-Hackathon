@@ -45,9 +45,9 @@ def heart_disease_prediction(df, apple_data, fitbit):
 
 def get_analysis():
     
-    apple_data = load_csv("./dataset/apple_watch.csv")[0:1]
-    fitbit = load_csv("./dataset/fitbit.csv")[0:1]
-    heart_analytics = heart_disease_prediction(load_csv('./dataset/heart_health_indicators.csv'), apple_data, fitbit)
+    apple_data = load_csv("../dataset/apple_watch.csv")[0:1]
+    fitbit = load_csv("../dataset/fitbit.csv")[0:1]
+    heart_analytics = heart_disease_prediction(load_csv('../dataset/heart_health_indicators.csv'), apple_data, fitbit)
 
     client = Groq(
         api_key=api_key,
@@ -61,7 +61,8 @@ def get_analysis():
                     Based on the user's {apple_data} and {fitbit} data, analyze their health stats and give a detailed explaination \
                  of their health data. Additionally, indicate the percentage of that person facing a heart condition based on their {heart_analytics}. \
                     Finally give only 10 analytics and include the source. For example: 1- You are not sleeping enough! You sleeped only for 4 hours on average (Apple Watch). \
-                        Only use my dataset and don't do any websearch, additionally only give 10 points and no prior or former explanation",
+                        Only use my dataset and don't do any websearch, additionally only give 10 points and no prior or former explanation. \
+                             Give me the output as an array of strings and do not have any text before or after. Just have that array of strings as a return",
             }
         ],
         model="llama-3.3-70b-versatile",
@@ -84,7 +85,9 @@ def get_habits():
             {
                 "role": "user",
                 "content": f"You are a professional medical professonal who is skilled as a dietition and personal traineer and \
-                    based on the health analysis of the user: {analysis}, give 10 action steps for the user to make healthier habits. ",
+                    based on the health analysis of the user: {analysis}, give ten action steps for the user to make healthier habits. \
+                         Give me the output as an array of strings and do not have any text before or after. Just have that array of strings as a return. \
+                            Do not number the suggestions",
             }
         ],
         model="llama-3.3-70b-versatile",
@@ -99,9 +102,9 @@ def compare_last_week():
     current_week = get_analysis()
 
     # Last week's data
-    apple_data = load_csv("./dataset/apple_watch.csv")[1:2]
-    fitbit = load_csv("./dataset/fitbit.csv")[1:2]
-    heart_analytics = heart_disease_prediction(load_csv('./dataset/heart_health_indicators.csv'), apple_data, fitbit)
+    apple_data = load_csv("../dataset/apple_watch.csv")[1:2]
+    fitbit = load_csv("../dataset/fitbit.csv")[1:2]
+    heart_analytics = heart_disease_prediction(load_csv('../dataset/heart_health_indicators.csv'), apple_data, fitbit)
 
     client = Groq(
         api_key=api_key,
@@ -115,7 +118,7 @@ def compare_last_week():
                 the task to compare the user's current data versus the last week to see if they made imporevements or did their progress suffer \
                 Look into their {current_week} and the previous week's data from their {apple_data}, {fitbit} and {heart_analytics}. Give a list of 10 \
                 things that improved or got worse at and only provide and return those ten things no other text before or after. For example: The user ran twice as longer \
-                compared to last week. "
+                compared to last week. Give me the output as an array of strings. Give me the output as an array of strings and do not have any text before or after. Just have that array of strings as a return"
             }
         ],
         model="llama-3.3-70b-versatile",

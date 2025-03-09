@@ -21,9 +21,6 @@ const data = [
 const LastWeekGraph: React.FC = () => {
   return (
     <Box p={3}>
-      <Typography variant="h6" gutterBottom>
-        Last Week Heart Rate Trends
-      </Typography>
       <ResponsiveContainer width="100%" height={300}>
         <LineChart data={data}>
           <XAxis dataKey="day" />

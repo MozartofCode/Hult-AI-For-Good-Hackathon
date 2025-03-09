@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -16,13 +17,66 @@ import { useNavigate } from "react-router-dom";
 const InsightsPage = () => {
   const navigate = useNavigate();
 
+  // ✅ State for dynamic insights
+  const [insights, setInsights] = useState([]);
+  const [weeklySummary, setWeeklySummary] = useState([]);
+  const [comparisonSummary, setComparisonSummary] = useState([]);
+
+  // ✅ Fetch insights from backend on component mount
+  useEffect(() => {
+    async function fetchInsights() {
+      try {
+        const response = await fetch("http://localhost:5000/getAnalysis");
+        if (!response.ok) {
+          throw new Error("Failed to fetch insights");
+        }
+        const data = await response.json();
+
+        // Ensure data.message is an array, or parse it if it's a string
+        setInsights(
+          Array.isArray(data.message)
+            ? data.message
+            : typeof data.message === "string"
+            ? JSON.parse(data.message)
+            : []
+        );
+      } catch (error) {
+        console.error("Error fetching insights:", error);
+      }
+    }
+
+    async function fetchWeeklySummary() {
+      try {
+        const response = await fetch("http://localhost:5000/compareLastWeek");
+        if (!response.ok) {
+          throw new Error("Failed to fetch weekly performance summary");
+        }
+        const data = await response.json();
+
+        // Ensure data.message is an array, or parse it if it's a string
+        setComparisonSummary(
+          Array.isArray(data.message)
+            ? data.message
+            : typeof data.message === "string"
+            ? JSON.parse(data.message)
+            : []
+        );
+      } catch (error) {
+        console.error("Error fetching weekly comparison:", error);
+      }
+    }
+
+    fetchInsights();
+    fetchWeeklySummary();
+  }, []);
+
   return (
     <Box p={4}>
       <Typography variant="h4" mb={3}>
         Insights
       </Typography>
 
-      {/* Combined: Insights Graph + Health Base Insights */}
+      {/* Insights Graph + Health Base Insights */}
       <Grid container spacing={3} alignItems="stretch">
         <Grid item xs={12}>
           <Card
@@ -36,20 +90,21 @@ const InsightsPage = () => {
             }}
           >
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="h6" gutterBottom>
-                Heart Rate Trends & Health Base Insights (Last 6 Hours)
-              </Typography>
               <Box
                 display="flex"
                 flexDirection={{ xs: "column", md: "row" }}
                 gap={3}
+                alignItems="flex-start"
               >
                 {/* Left - Graph */}
                 <Box flex={1}>
+                  <Typography variant="h6" gutterBottom>
+                    Heart Rate Trends & Health Base Insights (Last 6 Hours)
+                  </Typography>
                   <InsightsGraph />
                 </Box>
 
-                {/* Right - Bullet Points */}
+                {/* Right - Dynamic Insights */}
                 <Card
                   sx={{
                     p: 2,
@@ -58,27 +113,23 @@ const InsightsPage = () => {
                     backgroundColor: "#E3F2FD",
                     borderLeft: "5px solid #1E88E5",
                     flex: 1,
+                    alignSelf: "flex-start",
                   }}
                 >
                   <CardContent>
                     <Typography variant="h6">Health Base Insights</Typography>
                     <List>
-                      {[
-                        "Your average heart rate is stable.",
-                        "Nighttime heart rate is slightly elevated.",
-                        "Good recovery after workouts.",
-                        "Heart rate spikes detected during stress.",
-                        "No abnormal rhythms detected.",
-                        "Consistent resting heart rate.",
-                        "You have maintained healthy activity levels.",
-                        "Deep sleep phases improving.",
-                        "Hydration may impact heart rate variations.",
-                        "Keep monitoring for any irregular patterns.",
-                      ].map((point, index) => (
-                        <ListItem key={index}>
-                          <ListItemText primary={`• ${point}`} />
-                        </ListItem>
-                      ))}
+                      {insights.length > 0 ? (
+                        insights.map((point, index) => (
+                          <ListItem key={index}>
+                            <ListItemText primary={`• ${point}`} />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">
+                          Loading insights...
+                        </Typography>
+                      )}
                     </List>
                   </CardContent>
                 </Card>
@@ -88,7 +139,7 @@ const InsightsPage = () => {
         </Grid>
       </Grid>
 
-      {/* Combined: Last Week Heart Rate Trends & Weekly Performance Summary */}
+      {/* Last Week Heart Rate Trends & Weekly Performance Summary */}
       <Grid container spacing={3} alignItems="stretch" mt={4}>
         <Grid item xs={12}>
           <Card
@@ -102,15 +153,21 @@ const InsightsPage = () => {
             }}
           >
             <CardContent sx={{ flexGrow: 1 }}>
-              <Typography variant="h6" gutterBottom>
-                Last Week Heart Rate Trends & Performance Summary
-              </Typography>
               <Box
                 display="flex"
                 flexDirection={{ xs: "column", md: "row" }}
                 gap={3}
+                alignItems="flex-start"
               >
-                {/* Left - Weekly Summary */}
+                {/* Left - Weekly Trends */}
+                <Box flex={1}>
+                  <Typography variant="h6" gutterBottom>
+                    Last Week Heart Rate Trends & Performance Summary
+                  </Typography>
+                  <LastWeekGraph />
+                </Box>
+
+                {/* Right - Weekly Performance Summary */}
                 <Card
                   sx={{
                     p: 2,
@@ -119,36 +176,28 @@ const InsightsPage = () => {
                     backgroundColor: "#E8F5E9",
                     borderLeft: "5px solid #43A047",
                     flex: 1,
+                    alignSelf: "flex-start",
                   }}
                 >
                   <CardContent>
+                    <Typography variant="h6">
+                      Weekly Performance Summary
+                    </Typography>
                     <List>
-                      <ListItem>
-                        <ListItemText primary="✅ Achievements: Maintained average heart rate below 80 bpm" />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText primary="✅ Improved recovery time after exercise" />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText primary="✅ Reduced stress spikes by 15%" />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText primary="❌ Missed: Lowering evening heart rate" />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText primary="❌ Need more consistency in workout patterns" />
-                      </ListItem>
-                      <ListItem>
-                        <ListItemText primary="❌ Sleep cycle fluctuations detected" />
-                      </ListItem>
+                      {comparisonSummary.length > 0 ? (
+                        comparisonSummary.map((summary, index) => (
+                          <ListItem key={index}>
+                            <ListItemText primary={`• ${summary}`} />
+                          </ListItem>
+                        ))
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">
+                          Loading weekly summary...
+                        </Typography>
+                      )}
                     </List>
                   </CardContent>
                 </Card>
-
-                {/* Right - Graph */}
-                <Box flex={1}>
-                  <LastWeekGraph />
-                </Box>
               </Box>
             </CardContent>
           </Card>
