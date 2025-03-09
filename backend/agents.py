@@ -13,24 +13,41 @@ load_dotenv()
 
 api_key = os.getenv("GROQ_API_KEY")
 
+# Loads the csv file 
+# :param file_path: The file path
+# :return: df
 def load_csv(file_path):
     df = pd.read_csv(file_path)
     return df
 
 
-def generate_graph():
-    return
+def heart_disease_prediction(df, apple_data, fitbit):
 
+    client = Groq(
+        api_key=api_key,
+    )
 
-def heart_disease_prediction(heart_indicator, apple_data, fitbit):
-    return
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": f"Return one sentence that states the heart disease risk of the user based on their data from \
+                    {apple_data} and {fitbit} and based on the trends and data from heart risk dataset: {df}. Only return one sentence \
+                        for example: 'The heart attack risk is 50% in the next week'.",
+            }
+        ],
+        model="llama-3.3-70b-versatile",
+    )
+
+    return chat_completion.choices[0].message.content
+    
 
 
 def get_analysis():
     
     apple_data = load_csv("./dataset/apple_watch.csv")[0:1]
     fitbit = load_csv("./dataset/fitbit.csv")[0:1]
-    heart_analytics = heart_disease_prediction(load_csv("./dataset/heart_health_indicators.csv"), apple_data, fitbit)
+    heart_analytics = heart_disease_prediction(load_csv('./dataset/heart_health_indicators.csv'), apple_data, fitbit)
 
     client = Groq(
         api_key=api_key,
@@ -68,6 +85,37 @@ def get_habits():
                 "role": "user",
                 "content": f"You are a professional medical professonal who is skilled as a dietition and personal traineer and \
                     based on the health analysis of the user: {analysis}, give 10 action steps for the user to make healthier habits. ",
+            }
+        ],
+        model="llama-3.3-70b-versatile",
+    )
+
+    return chat_completion.choices[0].message.content
+
+
+
+def compare_last_week():
+
+    current_week = get_analysis()
+
+    # Last week's data
+    apple_data = load_csv("./dataset/apple_watch.csv")[1:2]
+    fitbit = load_csv("./dataset/fitbit.csv")[1:2]
+    heart_analytics = heart_disease_prediction(load_csv('./dataset/heart_health_indicators.csv'), apple_data, fitbit)
+
+    client = Groq(
+        api_key=api_key,
+    )
+
+    chat_completion = client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": f"You are a licensed medical professional and skilled as a dietition as well as a personal trainer. You are given \
+                the task to compare the user's current data versus the last week to see if they made imporevements or did their progress suffer \
+                Look into their {current_week} and the previous week's data from their {apple_data}, {fitbit} and {heart_analytics}. Give a list of 10 \
+                things that improved or got worse at and only provide and return those ten things no other text before or after. For example: The user ran twice as longer \
+                compared to last week. "
             }
         ],
         model="llama-3.3-70b-versatile",

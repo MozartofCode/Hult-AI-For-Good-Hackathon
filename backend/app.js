@@ -43,3 +43,18 @@ app.get('/getHabits', async (req, res) => {
     }
 
 });
+
+// Get Habits
+app.get('/compareLastWeek', async (req, res) => {
+
+    try {
+        const response = await axios.get('https://localhost:3000/compare_weeks');
+        const comparison = response.data;
+        res.status(200).json({ message: comparison});
+    }
+
+    catch(err) {
+        res.status(500).json({ message: err.message });
+    }
+
+});
