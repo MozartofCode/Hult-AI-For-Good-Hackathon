@@ -6,6 +6,7 @@
 Momentum is an AI-powered **habit tracking and wellness application** designed to help users improve their lifestyle and prevent chronic diseases. The app allows users to **integrate their health data** from **Apple Watch and Fitbit**, analyze their weekly progress, compare results, and receive personalized habit recommendations. Additionally, users can see how their friends are performing, fostering a supportive and engaging wellness community.  
 
 This project was developed as part of the **Hult AI for Good Hackathon** by Team **Momentum**.  
+Slide Deck: https://www.canva.com/design/DAGhQbQ8Ves/V2dd64f23vZdi-6GQ1A8wA/edit
 
 ## 👥 Team Momentum  
 - **Erin Realon**  
